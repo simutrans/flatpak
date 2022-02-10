@@ -1,0 +1,11 @@
+--- get_pak.sh.orig	2022-02-10 00:03:57.097086443 +0100
++++ get_pak.sh	2022-02-10 00:04:19.580508500 +0100
+@@ -125,7 +125,7 @@
+ 		echo "Error: Could not extract '$pakzippath' (unzip -Z returned: $result)" >&2
+ 		return 1
+ 	elif [ -n "$files" ]; then
+-		destdir="$(pwd)/"
++		destdir="$(pwd)/simutrans"
+ 	else
+ 		destdir="$(pwd)/.."
+ 	fi
