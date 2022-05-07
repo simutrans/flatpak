@@ -40,43 +40,28 @@ modules:
         url: http://miniupnp.free.fr/files/miniupnpc-2.1.20190625.tar.gz
         sha256: 8723f5d7fd7970de23635547700878cd29a5c2bb708b5e5475b2d1d2510317fb
 
+  - name: simutrans
+    buildsystem: cmake
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DSIMUTRANS_USE_REVISION=10630
+    builddir: true
+    post-install:
+      - mv $FLATPAK_DEST/share/icons/hicolor/scalable/apps/simutrans.svg $FLATPAK_DEST/share/icons/hicolor/scalable/apps/com.simutrans.Simutrans.svg
+      - mv $FLATPAK_DEST/share/applications/simutrans.desktop $FLATPAK_DEST/share/applications/com.simutrans.Simutrans.desktop
+      - sed -i "s/Icon=simutrans/Icon=com.simutrans.Simutrans/g" $FLATPAK_DEST/share/applications/com.simutrans.Simutrans.desktop
+    sources:
+      - type: svn
+        url: svn://servers.simutrans.org/simutrans/trunk
+        revision: 10630
+        #strip-components: 0
+
   - name: musescore-general-soundfont
     buildsystem: simple
     build-commands:
-      - mv MuseScore_General.sf3 default.sf3 
-      - install -D -m 644 -t $FLATPAK_DEST/share/games/simutrans/music default.sf3
+      - install -D -m 644 -t $FLATPAK_DEST/share/soundfonts MuseScore_General.sf3
+      - ln -s $FLATPAK_DEST/share/soundfonts/MuseScore_General.sf3 $FLATPAK_DEST/share/simutrans/music/default.sf3 
     sources:
       - type: file
         url: https://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf3
         sha256: 5b85b6c2c61d10b2b91cddd41efcce7b25cd31c8271d511c73afafbef20b6fa3
-        
-  - name: simutrans
-    config-opts:
-    buildsystem: simple
-    build-commands:
-      - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-      - echo "#define REVISION 10421" >> revision.h
-      - cmake --build build -j$(nproc) --target install
-    builddir: true
-    post-install:
-      - mv simutrans.svg com.simutrans.Simutrans.svg
-      - install -D -m 644 -t $FLATPAK_DEST/share/applications com.simutrans.Simutrans.desktop
-      - install -D -m 644 -t $FLATPAK_DEST/share/icons/hicolor/scalable/apps com.simutrans.Simutrans.svg
-      - install -D -m 755 -t $FLATPAK_DEST/bin build/simutrans/simutrans
-      - install -D -m 755 -t $FLATPAK_DEST/share/games/simutrans get_pak.sh
-      - rm build/simutrans/simutrans
-      - mkdir -p $FLATPAK_DEST/share/games/simutrans
-      - sed -i "s/#singleuser_install = 0/singleuser_install = 1/g" simutrans/config/simuconf.tab
-      - cp -r simutrans/* $FLATPAK_DEST/share/games/simutrans
-    sources:
-      - type: archive
-        url: https://sourceforge.net/projects/simutrans/files/simutrans/123-0-1/simutrans-src-123-0-1.zip
-        sha256: 8deb38c8de41fb5558640cdd4b9b161c38de92c077b3e506f74c34f93214f469
-        strip-components: 0
-      - type: file
-        path: com.simutrans.Simutrans.desktop
-      - type: patch
-        path: path-for-game-data.patch
-      - type: patch
-        path: get_pak.patch
-
